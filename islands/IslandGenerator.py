@@ -9,7 +9,7 @@ from pyrr import Vector3
 from core import Loader
 from islands import PerlinNoise
 
-GRID_SIZE = 64
+GRID_SIZE = 16
 ISO_LEVEL = 0.5
 VOXEL_SIZE = 1
 MAP_SIZE = 257
@@ -485,7 +485,7 @@ def vertexInterpolate(v1, v2, value1, value2):
         v2 = temp
 
     if math.fabs(value1 - value2) > 0.00001:
-        return v1 + (ISO_LEVEL - value1) * (v2 - v1) / (value2 - value1)
+        return (v1 + v2) / 2
     else:
         return v1
 

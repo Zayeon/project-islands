@@ -60,6 +60,8 @@ class Window:
     def onCursorMove(self, window, xpos, ypos):
         for method in self.onCursorMethods:
             method(xpos, ypos)
+        Reference.mouseX = xpos
+        Reference.mouseY = ypos
 
     def getCursorPos(self):
         return glfw.get_cursor_pos(self.windowID)

@@ -29,8 +29,8 @@ class Tree(Entity):
 
     def __init__(self):
         texture = TextureAtlas.importFile("res/textures/tree.png", 1)
-        texture.reflectivity = 0.9
-        texture.shineDamper = 0.8
+        texture.reflectivity = 0.3
+        texture.shineDamper = 0.3
         self.mesh = OBJModel.importFile("res/models/tree.obj")
         self.model = TexturedModel(self.mesh.createRawModel(), texture)
 

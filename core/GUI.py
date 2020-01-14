@@ -14,9 +14,15 @@ class GUI:
     def getComponents(self):
         return [b.getComponent() for b in self.components]
 
+    def update(self):
+        for component in self.components:
+            component.update()
+
+    def setup(self):
+        for c in self.components:
+            c.setTrueCoords(1, 1)
 
 class GUIComponent:
-    screenPosition = np.array([0, 0], dtype=np.float32)
     model = None
 
     def __init__(self, x, y, width, height):
@@ -25,6 +31,18 @@ class GUIComponent:
         self.y = y
         self.width = width
         self.height = height
+        self.trueX = None
+        self.trueY = None
+        self.trueWidth = None
+        self.trueHeight = None
+
+    def setTrueCoords(self, multiplierX, multiplierY):
+        print("[TRUE COORDS]", multiplierX, multiplierY)
+        self.trueX = self.x * multiplierX
+        self.trueY = self.y * multiplierY
+        self.trueWidth = self.width * multiplierX
+        self.trueHeight = self.height * multiplierY
+
 
     def update(self):
         pass
@@ -35,10 +53,10 @@ class GUIComponent:
 
     def genModel(self):
         self.model = [
-            self.x, self.y,
-            self.x + self.width, self.y,
-            self.x + self.width, self.y + self.height,
-            self.x, self.y + self.height
+            self.trueX, self.trueY,
+            self.trueX + self.trueWidth, self.trueY,
+            self.trueX + self.trueWidth, self.trueY + self.trueHeight,
+            self.trueX, self.trueY + self.trueHeight
         ]
         self.model = np.array(self.model, dtype=np.float32)
 
@@ -48,12 +66,13 @@ class GUIDivision(GUIComponent):
 
     display = False
 
-    def __init__(self, x, y, width, height):
-        super().__init__(x, y, width, height)
+    def __init__(self, rect):
+        super().__init__(*rect)
 
         self.components = []
 
     def addComponent(self, c):
+
         self.components.append(c)
 
     def setDisplayed(self, display, colour):
@@ -68,10 +87,18 @@ class GUIDivision(GUIComponent):
         a.extend([b.getComponent() for b in self.components])
         return a
 
+    def setup(self):
+        for c in self.components:
+            c.setTrueCoords(self.trueWidth, self.trueHeight)
+
+    def update(self):
+        for component in self.components:
+            component.update()
+
 
 class GUIText(GUIComponent):
-    def __init__(self, font, model, width, height, scale, colour):
-        super().__init__(0, 0, width, height)
+    def __init__(self, font, model, rect, scale, colour):
+        super().__init__(*rect)
 
         self.model = model
         self.scale = scale
@@ -83,6 +110,23 @@ class GUIText(GUIComponent):
 
     def getHeight(self):
         return self.height * self.scale
+
+
+class GUIButton(GUIComponent):
+    def __init__(self, rect, baseColour):
+        super().__init__(*rect)
+        self.baseColour = baseColour
+        self.colour = baseColour
+
+    def update(self):
+        print("[MOSE]", Reference.mouseX, Reference.mouseY)
+        if 0 <= Reference.mouseX <= Reference.WINDOW_WIDTH and 0 <= Reference.mouseY <= Reference.WINDOW_HEIGHT:
+            x1 = (2 * Reference.mouseX) / Reference.WINDOW_WIDTH - 1
+            y1 = -(2 * Reference.mouseY) / Reference.WINDOW_HEIGHT - 1
+            normX = x1 + 0.5
+            normY = y1 + 0.5
+            # print("[MOUSE]", normX, normY)
+
 
 
 # Holds information about a font
@@ -109,7 +153,7 @@ class FontType:
                     character.normalise(self.fontSheetTexture.width, self.fontSheetTexture.height, aspectRatio)
                     self.charTable[character.ID] = character
 
-    def constructGuiText(self, text, scale, lineSpacing, colour):
+    def constructGuiText(self, text, scale, pos, lineSpacing, colour):
         vertices = []
         textureCoords = []
         indices = np.array([], dtype=np.uint8)  # may be too small
@@ -148,7 +192,7 @@ class FontType:
 
         model = RawModel.loadPTI(vertices, textureCoords, indices)
 
-        return GUIText(self, model, width, height, scale, colour)
+        return GUIText(self, model, (*pos, width, height), scale, colour)
 
 
 class Character:

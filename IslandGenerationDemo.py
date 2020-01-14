@@ -32,14 +32,17 @@ lights.append(light1)
 # GUI
 font = GUI.FontType("res/font/arial")
 myGUI = GUI.GUI()
-div1 = GUI.GUIDivision(0, 0, 1, 1)
+div1 = GUI.GUIDivision((0, 0, 1, 1))
 div1.display = True
-text = font.constructGuiText("Hello World!", 1, 0.15, [1, 0, 0])
+text = font.constructGuiText("Hello World!", 1, (0, 0), 0.15, [1, 0, 0])
 div1.addComponent(text)
+button = GUI.GUIButton((0, 0, 0.1, 0.05), (0, 0.7, 0.8))
+div1.addComponent(button)
 # div2 = GUI.GUIDivision(0, 0, 1, 1)
 # text2 = GUI.GUIText(0, 0, 0, 0, 1, (1, 1, 1))
 # div2.addComponent(text1)
 myGUI.addComponent(div1)
+myGUI.setup()
 
 # AUDIO
 audioContext = Audio.createContext()
@@ -55,7 +58,7 @@ while not window.shouldClose():
     cam.handleKeyboardInput()
 
     masterRenderer.renderScene(cam, entities, [island], lights)
-    # masterRenderer.renderGUI(myGUI)
+    masterRenderer.renderGUI(myGUI)
 
     if window.getKeyState(glfw.KEY_M) == glfw.PRESS:
         if not source.isPlaying():
@@ -67,6 +70,7 @@ while not window.shouldClose():
     if window.getKeyState(glfw.KEY_ESCAPE) == glfw.PRESS:
         window.setCursorLock(False)
 
+    myGUI.update()
     window.updateDisplay()
 
 # renderEngine.cleanUp() TODO: reminder to fix this
