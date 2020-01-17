@@ -66,6 +66,9 @@ class Window:
     def getCursorPos(self):
         return glfw.get_cursor_pos(self.windowID)
 
+    def getMouseState(self, button):
+        return glfw.get_mouse_button(self.windowID, button)
+
     def bindCursorMove(self, method):
         self.onCursorMethods.append(method)
 

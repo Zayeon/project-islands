@@ -36,7 +36,7 @@ div1 = GUI.GUIDivision((0, 0, 1, 1))
 div1.display = True
 text = font.constructGuiText("Hello World!", 1, (0, 0), 0.15, [1, 0, 0])
 div1.addComponent(text)
-button = GUI.GUIButton((0, 0, 0.1, 0.05), (0, 0.7, 0.8))
+button = GUI.GUIButton((0, 0, 0.1, 0.05), (0, 0.7, 0.8), window)
 div1.addComponent(button)
 # div2 = GUI.GUIDivision(0, 0, 1, 1)
 # text2 = GUI.GUIText(0, 0, 0, 0, 1, (1, 1, 1))

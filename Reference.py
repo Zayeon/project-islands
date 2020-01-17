@@ -7,6 +7,3 @@ CAMERA_FOV = 90
 global deltaTime
 deltaTime = 0
 
-global mouseX, mouseY
-mouseX = 0
-mouseY = 0

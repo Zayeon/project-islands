@@ -1,3 +1,4 @@
+import glfw
 import numpy as np
 
 import Reference
@@ -37,7 +38,6 @@ class GUIComponent:
         self.trueHeight = None
 
     def setTrueCoords(self, multiplierX, multiplierY):
-        print("[TRUE COORDS]", multiplierX, multiplierY)
         self.trueX = self.x * multiplierX
         self.trueY = self.y * multiplierY
         self.trueWidth = self.width * multiplierX
@@ -87,7 +87,12 @@ class GUIDivision(GUIComponent):
         a.extend([b.getComponent() for b in self.components])
         return a
 
-    def setup(self):
+    def setTrueCoords(self, multiplierX, multiplierY):
+        self.trueX = self.x * multiplierX
+        self.trueY = self.y * multiplierY
+        self.trueWidth = self.width * multiplierX
+        self.trueHeight = self.height * multiplierY
+
         for c in self.components:
             c.setTrueCoords(self.trueWidth, self.trueHeight)
 
@@ -113,19 +118,26 @@ class GUIText(GUIComponent):
 
 
 class GUIButton(GUIComponent):
-    def __init__(self, rect, baseColour):
+    def __init__(self, rect, baseColour, window):
         super().__init__(*rect)
         self.baseColour = baseColour
         self.colour = baseColour
+        self.window = window
+        self.hovered = False
+        self.click = False
 
     def update(self):
-        print("[MOSE]", Reference.mouseX, Reference.mouseY)
-        if 0 <= Reference.mouseX <= Reference.WINDOW_WIDTH and 0 <= Reference.mouseY <= Reference.WINDOW_HEIGHT:
-            x1 = (2 * Reference.mouseX) / Reference.WINDOW_WIDTH - 1
-            y1 = -(2 * Reference.mouseY) / Reference.WINDOW_HEIGHT - 1
-            normX = x1 + 0.5
-            normY = y1 + 0.5
-            # print("[MOUSE]", normX, normY)
+        mousePos = self.window.getCursorPos()
+        leftClick = self.window.getMouseState(glfw.MOUSE_BUTTON_LEFT)
+        if 0 <= mousePos[0] <= Reference.WINDOW_WIDTH and 0 <= mousePos[1] <= Reference.WINDOW_HEIGHT:
+            normX = mousePos[0] / (0.5 * Reference.WINDOW_WIDTH) - 1
+            normY = -(mousePos[1] / (0.5 * Reference.WINDOW_HEIGHT) - 1)
+            maxX = self.trueX + self.trueWidth
+            maxY = self.trueY + self.trueHeight
+            self.hovered = self.trueX <= normX <= maxX and self.trueY <= normY <= maxY
+            self.click = self.hovered and leftClick == glfw.PRESS
+
+
 
 
 
